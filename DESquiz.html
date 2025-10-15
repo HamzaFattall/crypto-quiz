@@ -30,6 +30,12 @@
       background: #222;
       border-radius: 8px;
     }
+    .question.wrong {
+      background: #3b0b0b;
+      border: 1px solid #ff4d4d;
+      box-shadow: 0 0 6px rgba(255,77,77,0.2);
+      transition: background 0.2s, box-shadow 0.2s;
+    }
     button {
       background: #00ffcc;
       color: #000;
@@ -54,7 +60,10 @@
   <div class="container">
     <h1>DACS3101 – Stream Ciphers & DES Quiz Practice</h1>
     <div id="quiz"></div>
-    <button id="submit">Submit Answers</button>
+    <div style="display:flex; gap:10px; align-items:center;">
+      <button id="submit">Submit Answers</button>
+      <button id="reset" style="background:#ff4d4d;color:#fff;">Try Again</button>
+    </div>
     <div id="result"></div>
   </div>
 
@@ -126,7 +135,7 @@
         const options = item.options.map((opt, j) => `
           <label><input type="radio" name="q${i}" value="${j}"> ${opt}</label><br>
         `).join('');
-        return `<div class='question'><strong>${i + 1}. ${item.q}</strong><br>${options}</div>`;
+        return `<div class='question' data-q='${i}'><strong>${i + 1}. ${item.q}</strong><br>${options}</div>`;
       });
       quizContainer.innerHTML = output.join('');
     }
@@ -134,14 +143,49 @@
     function showResults() {
       let score = 0;
       quizData.forEach((item, i) => {
+        const qDiv = quizContainer.querySelector(`.question[data-q="${i}"]`);
+        // clear previous state
+        qDiv.classList.remove('wrong');
+
         const selected = document.querySelector(`input[name=q${i}]:checked`);
-        if (selected && parseInt(selected.value) === item.answer) score++;
+        if (selected) {
+          const val = parseInt(selected.value);
+          if (val === item.answer) {
+            score++;
+          } else {
+            // mark the whole question as wrong
+            qDiv.classList.add('wrong');
+          }
+        }
       });
       resultContainer.innerHTML = `<h3>You scored ${score} / ${quizData.length}</h3>`;
     }
 
+    function resetQuiz() {
+      // clear selections
+      document.querySelectorAll('#quiz input[type=radio]').forEach(r => r.checked = false);
+      // clear highlights
+      document.querySelectorAll('#quiz .question').forEach(d => d.classList.remove('wrong'));
+      // clear result
+      resultContainer.innerHTML = '';
+      // move focus to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function attachListeners() {
+      // remove wrong highlight when the user changes an answer
+      document.querySelectorAll('#quiz input[type=radio]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+          const parent = e.target.closest('.question');
+          if (parent) parent.classList.remove('wrong');
+        });
+      });
+    }
+
     buildQuiz();
+    attachListeners();
     submitBtn.addEventListener('click', showResults);
+    document.getElementById('reset').addEventListener('click', resetQuiz);
   </script>
 </body>
 </html>
