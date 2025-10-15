@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DACS3101 Cryptography Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0e0e0e;
+      color: #f0f0f0;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      background: #1c1c1c;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    h1 {
+      text-align: center;
+      color: #00ffcc;
+    }
+    .question {
+      margin: 20px 0;
+      padding: 15px;
+      background: #222;
+      border-radius: 8px;
+    }
+    button {
+      background: #00ffcc;
+      color: #000;
+      border: none;
+      padding: 10px 15px;
+      margin: 10px 0;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #00cca3;
+    }
+    #result {
+      text-align: center;
+      font-size: 1.2em;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>DACS3101 – Stream Ciphers & DES Quiz Practice</h1>
+    <div id="quiz"></div>
+    <button id="submit">Submit Answers</button>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    const quizData = [
+      {q: 'In symmetric encryption, encryption and decryption use:', options: ['Different keys', 'The same key', 'Public and private keys', 'No key'], answer: 1},
+      {q: 'The equation for symmetric encryption is:', options: ['y = eK(x)', 'y = x ⊕ K', 'x = eK(y)', 'y = dK(x)'], answer: 0},
+      {q: 'For symmetric encryption, the key must be transmitted:', options: ['Via an unsecure channel', 'Publicly over the Internet', 'Via a secure channel', 'Not transmitted at all'], answer: 2},
+      {q: 'The main security issue in symmetric cryptography is:', options: ['Algorithm complexity', 'Secure key transmission and storage', 'Random number generation', 'Cipher design'], answer: 1},
+      {q: 'Kerckhoff’s Principle states that:', options: ['System secure even if algorithm known', 'Algorithm must be secret', 'Key public', 'Ciphertext secret'], answer: 0},
+      {q: 'A brute-force attack requires at least:', options: ['1 ciphertext', '1 plaintext-ciphertext pair', 'The public key', 'Multiple ciphertexts'], answer: 1},
+      {q: 'Which of the following is a non-mathematical attack?', options: ['Linear cryptanalysis', 'Side-channel power analysis', 'Algebraic attack', 'Differential cryptanalysis'], answer: 1},
+      {q: 'A 64-bit key provides security for about:', options: ['Days', 'Months', 'Decades', 'Quantum-resistance'], answer: 0},
+      {q: 'A 256-bit key provides:', options: ['Short-term protection', 'Resistance even to quantum attacks', 'Weak security', 'Moderate protection'], answer: 1},
+      {q: 'Stream ciphers encrypt data:', options: ['Bit by bit', 'Block by block', 'Message by message', 'Byte by byte'], answer: 0},
+      {q: 'Stream ciphers are:', options: ['Slow and heavy', 'Fast and efficient', 'Used only for storage', 'Based on asymmetric keys'], answer: 1},
+      {q: 'Stream ciphers were first proposed by:', options: ['Claude Shannon', 'Gilbert Vernam', 'Diffie and Hellman', 'Horst Feistel'], answer: 1},
+      {q: 'In stream ciphers, encryption and decryption are:', options: ['Different', 'The same (XOR operation)', 'Irreversible', 'Random'], answer: 1},
+      {q: 'Modulo-2 addition corresponds to:', options: ['AND', 'XOR', 'OR', 'NOT'], answer: 1},
+      {q: 'For a random key stream, each ciphertext bit has:', options: ['50% chance of being 0 or 1', 'A fixed pattern', 'Unequal probabilities', 'Random length'], answer: 0},
+      {q: 'In a synchronous stream cipher, the key stream depends on:', options: ['The ciphertext', 'The key and IV', 'The plaintext', 'The hardware clock'], answer: 1},
+      {q: 'In an asynchronous stream cipher, the key stream depends on:', options: ['The key only', 'The ciphertext feedback', 'Random noise', 'A timer'], answer: 1},
+      {q: 'A True RNG is based on:', options: ['Physical randomness', 'Mathematical formulas', 'Modular arithmetic', 'XOR gates'], answer: 0},
+      {q: 'A PRNG output can be:', options: ['Reproduced from the same seed', 'Non-deterministic', 'Physically random', 'Irreversible'], answer: 0},
+      {q: 'The rand() function in C is an example of:', options: ['TRNG', 'PRNG', 'Stream cipher', 'CSPRNG'], answer: 1},
+      {q: 'A CSPRNG must produce output that is:', options: ['Predictable', 'Unpredictable in polynomial time', 'Reproducible', 'Finite-length only'], answer: 1},
+      {q: 'The One-Time Pad (OTP) is secure only if:', options: ['The key is random and used once', 'The key is reused', 'The key is short', 'The plaintext is random'], answer: 0},
+      {q: 'The One-Time Pad provides:', options: ['Conditional security', 'Computational security', 'Unconditional security', 'Limited protection'], answer: 2},
+      {q: 'The major drawback of OTP is:', options: ['Key must be as long as the message', 'It’s not mathematically sound', 'It’s vulnerable to brute-force', 'It uses XOR'], answer: 0},
+      {q: 'LFSRs are composed of:', options: ['Logic gates', 'Flip-flops and XOR feedback', 'AES blocks', 'Mathematical matrices'], answer: 1},
+      {q: 'The maximum output length of an LFSR with degree m is:', options: ['2m', '2m – 1', 'm × 2', 'm²'], answer: 1},
+      {q: 'LFSRs are insecure because:', options: ['They are nonlinear', 'They have predictable linear feedback', 'They are too slow', 'They use random numbers'], answer: 1},
+      {q: 'The Trivium cipher uses how many nonlinear feedback shift registers?', options: ['2', '3', '4', '5'], answer: 1},
+      {q: 'The lengths of Trivium’s registers are:', options: ['80, 80, 80', '93, 84, 111', '64, 64, 64', '100, 128, 256'], answer: 1},
+      {q: 'Trivium uses a key of length:', options: ['56 bits', '64 bits', '80 bits', '128 bits'], answer: 2},
+      {q: 'During initialization, Trivium is clocked how many times before output?', options: ['512', '1024', '1152', '288'], answer: 2},
+      {q: 'Trivium is designed to be:', options: ['Lightweight and parallelizable', 'CPU-heavy', 'For academic use only', 'A replacement for AES'], answer: 0},
+      {q: 'DES encrypts blocks of size:', options: ['32 bits', '56 bits', '64 bits', '128 bits'], answer: 2},
+      {q: 'DES was standardized in:', options: ['1967', '1977', '1987', '1997'], answer: 1},
+      {q: 'DES key size (effective) is:', options: ['64 bits', '56 bits', '48 bits', '32 bits'], answer: 1},
+      {q: 'DES was replaced by AES in:', options: ['1995', '2000', '2005', '2010'], answer: 1},
+      {q: 'The main reason DES is now insecure:', options: ['Weak S-boxes', 'Small key length', 'Poor diffusion', 'Complex algorithm'], answer: 1},
+      {q: 'Confusion in block ciphers is achieved through:', options: ['Substitution', 'Permutation', 'Expansion', 'XOR'], answer: 0},
+      {q: 'Diffusion hides:', options: ['The key', 'Statistical structure of plaintext', 'Ciphertext redundancy', 'Encryption key'], answer: 1},
+      {q: 'DES performs how many rounds?', options: ['8', '10', '12', '16'], answer: 3},
+      {q: 'DES is based on which cipher structure?', options: ['SPN', 'Feistel network', 'Matrix cipher', 'RSA'], answer: 1},
+      {q: 'Each DES round uses:', options: ['Same key', 'Different subkey', 'Two keys', 'No key'], answer: 1},
+      {q: 'Initial and final permutations in DES are:', options: ['Random', 'Inverse of each other', 'Non-invertible', 'Arbitrary'], answer: 1},
+      {q: 'The DES F-function inputs are:', options: ['Li-1 and Ki', 'Ri-1 and Ki', 'Plaintext and key', 'Ciphertext and key'], answer: 1},
+      {q: 'The F-function steps are:', options: ['Expansion → XOR → S-box → Permutation', 'Permutation → XOR → Expansion → S-box', 'XOR → Expansion → Substitution → Permutation', 'Substitution → Expansion → XOR → Permutation'], answer: 0},
+      {q: 'Each S-box in DES has input/output sizes of:', options: ['4 in, 6 out', '6 in, 4 out', '8 in, 8 out', '8 in, 4 out'], answer: 1},
+      {q: 'How many round keys does DES use?', options: ['8', '12', '16', '24'], answer: 2},
+      {q: 'DES original key length is 64 bits, but 8 bits are:', options: ['Padding bits', 'Parity bits', 'Round bits', 'Initialization bits'], answer: 1},
+      {q: 'In rounds 1, 2, 9, and 16, key halves are rotated:', options: ['2 bits', '1 bit', '3 bits', 'Not rotated'], answer: 1},
+      {q: 'DES decryption differs only by:', options: ['Using reversed key order', 'Using inverse S-boxes', 'Changing round count', 'Modifying permutation'], answer: 0},
+      {q: 'DES key space size:', options: ['2³²', '2⁴⁸', '2⁵⁶', '2⁶⁴'], answer: 2},
+      {q: 'DES is resistant to:', options: ['Linear and differential cryptanalysis', 'Brute force', 'Timing attacks', 'Quantum attacks'], answer: 0},
+      {q: 'EFF’s Deep Crack machine broke DES in:', options: ['22 hours', '56 hours', '15 days', '4.5 months'], answer: 1},
+      {q: 'Triple DES extends key length to:', options: ['80 bits', '112 bits', '128 bits', '168 bits'], answer: 1},
+      {q: 'The worldwide DES replacement standard is:', options: ['IDEA', 'AES', 'RC6', 'Twofish'], answer: 1}
+    ];
+
+    const quizContainer = document.getElementById('quiz');
+    const resultContainer = document.getElementById('result');
+    const submitBtn = document.getElementById('submit');
+
+    function buildQuiz() {
+      const output = quizData.map((item, i) => {
+        const options = item.options.map((opt, j) => `
+          <label><input type="radio" name="q${i}" value="${j}"> ${opt}</label><br>
+        `).join('');
+        return `<div class='question'><strong>${i + 1}. ${item.q}</strong><br>${options}</div>`;
+      });
+      quizContainer.innerHTML = output.join('');
+    }
+
+    function showResults() {
+      let score = 0;
+      quizData.forEach((item, i) => {
+        const selected = document.querySelector(`input[name=q${i}]:checked`);
+        if (selected && parseInt(selected.value) === item.answer) score++;
+      });
+      resultContainer.innerHTML = `<h3>You scored ${score} / ${quizData.length}</h3>`;
+    }
+
+    buildQuiz();
+    submitBtn.addEventListener('click', showResults);
+  </script>
+</body>
+</html>
